@@ -1,85 +1,113 @@
 import streamlit as st
 import time
 
-# Dashboard Configuration
-st.set_page_config(page_title="Aditya AI Scalper", page_icon="📈", layout="centered")
+# Page Configuration
+st.set_page_config(page_title="ADITYA AI SCALPER ULTIMATE", layout="wide", page_icon="📈")
 
-# --- CUSTOM CSS FOR PREMIUM LOOK ---
+# Custom CSS for High-Tech UI
 st.markdown("""
     <style>
-    .main { background-color: #0e1117; }
+    .main { background-color: #0e1117; color: white; }
+    .stApp { background: radial-gradient(circle, #1c1f26 0%, #0e1117 100%); }
+    
+    /* Stats Cards */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(0, 251, 255, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .stat-val { font-size: 24px; font-weight: bold; color: #00fbff; }
+    
+    /* Buttons */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
-        height: 3em;
-        background-color: #2e7d32;
-        color: white;
+        height: 3.5em;
         font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
-    .stTextInput>div>div>input { border-radius: 8px; }
-    h1 { color: #00d4ff; text-align: center; font-family: 'Trebuchet MS'; }
+    .stButton>button:first-child { 
+        background: linear-gradient(45deg, #00ff88, #00a859);
+        color: black; border: none;
+    }
+    .stButton>button:last-child { 
+        background: linear-gradient(45deg, #ff4b4b, #a80000);
+        color: white; border: none;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER SECTION ---
-st.markdown("<h1>🚀 ADITYA AI SCALPER PRO</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: gray;'>Premium Gold & Forex Scalping Terminal</p>", unsafe_allow_html=True)
-
-# --- SIDEBAR: MT5 CONNECTION ---
+# Sidebar - Connection Hub
 with st.sidebar:
-    st.image("https://img.icons8.com/fluency/100/bot.png")
-    st.header("🔐 MT5 CONNECTION")
-    acc_id = st.text_input("Account Number", placeholder="e.g. 1234567")
-    acc_pass = st.text_input("Master Password", type="password")
-    acc_server = st.text_input("Server", placeholder="e.g. VProp-Server")
+    st.image("https://cdn-icons-png.flaticon.com/512/2091/2091665.png", width=80)
+    st.header("🔑 MASTER ACCESS")
+    acc_id = st.text_input("MT5 ID", placeholder="Account Number")
+    password = st.text_input("Password", type="password")
+    server = st.text_input("Server", placeholder="e.g. VProp-Server")
+    st.divider()
+    st.info("System: MT5 Connection Ready")
+    st.caption("Magic No: 889911 Active")
+
+# Header
+st.title("🛡️ ADITYA AI SCALPER - ULTIMATE V3.0")
+st.write("---")
+
+# Metrics Row
+m1, m2, m3, m4 = st.columns(4)
+with m1: st.markdown('<div class="stat-card"><small>Pair</small><div class="stat-val">XAUUSD</div></div>', unsafe_allow_html=True)
+with m2: st.markdown('<div class="stat-card"><small>Bot Status</small><div class="stat-val" style="color:#00ff88;">READY</div></div>', unsafe_allow_html=True)
+with m3: st.markdown('<div class="stat-card"><small>Spread</small><div class="stat-val">12</div></div>', unsafe_allow_html=True)
+with m4: st.markdown('<div class="stat-card"><small>Daily P/L</small><div class="stat-val">$0.00</div></div>', unsafe_allow_html=True)
+
+st.write("---")
+
+# Settings Area
+left, right = st.columns([1.5, 2])
+
+with left:
+    st.subheader("⚙️ STRATEGY SETTINGS")
+    with st.container(border=True):
+        lot = st.number_input("Lot Size", 0.01, 5.0, 0.01, step=0.01)
+        mode = st.radio("Execution Mode", ["Conservative 🛡️", "Aggressive 🔥"], horizontal=True)
+        
+        st.divider()
+        st.markdown("**Profit & Risk Control**")
+        control_type = st.segmented_control("Control Mode", ["AI Automatic", "Manual Pips"])
+        
+        if control_type == "Manual Pips":
+            c1, c2 = st.columns(2)
+            tp = c1.number_input("Take Profit (Pips)", 1, 100, 10)
+            sl = c2.number_input("Stop Loss (Pips)", 1, 100, 5)
+        else:
+            st.write("🤖 AI is handling TP/SL based on market volatility.")
+            tp, sl = "Auto", "Auto"
+
+    st.write("")
+    if st.button("▶ START TRADING"):
+        st.balloons()
+        st.toast(f"Bot Active: {mode}")
+    if st.button("🛑 STOP BOT"):
+        st.error("System Offline")
+
+with right:
+    st.subheader("📜 LIVE INTELLIGENCE LOGS")
+    with st.container(border=True):
+        st.code(f"""
+[SYSTEM] Initializing Aditya AI Scalper...
+[CONFIG] Asset: XAUUSD | Lot: {lot}
+[MODE] Strategy: {mode} | Control: {control_type}
+[TARGETS] TP: {tp} | SL: {sl}
+[WAIT] Scanning for high-probability setups...
+        """, language="bash")
     
     st.divider()
-    st.info("Secure Connection: Your credentials are encrypted and sent directly to your broker server.")
+    st.markdown("#### 🔄 MULTI-ACCOUNT MANAGEMENT")
+    st.checkbox("Enable Sync for Multi-Account", value=False)
+    st.button("+ Add Linked Account")
 
-# --- MAIN DASHBOARD LAYOUT ---
-col1, col2, col3 = st.columns(3)
-col1.metric("Current Pair", "XAUUSD")
-col2.metric("Bot Status", "Standby", "Ready")
-col3.metric("Live Spread", "12", "-2")
-
-st.divider()
-
-# --- STRATEGY SETTINGS ---
-st.subheader("🛠 STRATEGY CONFIGURATION")
-c1, c2 = st.columns(2)
-
-with c1:
-    symbol = st.selectbox("Trading Asset", ["XAUUSD (GOLD)", "EURUSD", "GBPUSD", "BTCUSD"])
-    timeframe = st.select_slider("Timeframe Strategy", options=["M1", "M5", "M15", "M30"])
-
-with c2:
-    lot_size = st.number_input("Risk: Lot Size", min_value=0.01, max_value=10.0, value=0.01, step=0.01)
-    mode = st.radio("Execution Mode", ["Conservative", "Aggressive"], horizontal=True)
-
-# --- CONTROL BUTTONS ---
-st.divider()
-btn_col1, btn_col2 = st.columns(2)
-
-if btn_col1.button("▶ START TRADING"):
-    if not acc_id or not acc_pass:
-        st.error("Please enter MT5 Credentials!")
-    else:
-        with st.spinner('Connecting to Market...'):
-            time.sleep(2)
-            st.success(f"✅ Bot Started! Scanning {symbol} on {timeframe}.")
-            st.toast("Connection Successful!", icon="🔥")
-
-if btn_col2.button("🛑 STOP BOT"):
-    st.warning("Bot Halted. All open positions are secured.")
-
-# --- LIVE ACTIVITY LOGS ---
-st.subheader("📊 LIVE MARKET LOGS")
-log_text = f"""
-[SYSTEM] Initializing AI Logic...
-[MARKET] Monitoring {symbol} Price Action.
-[INFO] Ready to execute {mode} trades with {lot_size} lot.
-[STATUS] Waiting for high-probability setup...
-"""
-st.code(log_text, language='bash')
-
-st.markdown("<br><hr><center><p style='color: gray; font-size: 12px;'>Developed by Aditya AI Labs | 2026 Edition</p></center>", unsafe_allow_html=True)
+st.write("---")
+st.caption("Aditya AI Labs | Scalping Terminal 2026")
