@@ -1,9 +1,9 @@
 import streamlit as st
 
-# Page Configuration - Mobile Friendly
+# Page Configuration
 st.set_page_config(page_title="ADITYA AI SCALPER ULTIMATE", layout="wide", page_icon="🤖")
 
-# Custom CSS for High-Tech UI
+# Custom CSS
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: white; }
@@ -16,84 +16,65 @@ st.markdown("""
         text-align: center;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
-    .stat-val { font-size: 24px; font-weight: bold; color: #00fbff; }
-    .stButton>button {
-        width: 100%;
-        border-radius: 10px;
-        height: 3.5em;
-        font-weight: bold;
-    }
-    .stButton>button:first-child { 
-        background: linear-gradient(45deg, #00ff88, #00a859);
-        color: black; border: none;
-    }
-    .stButton>button:last-child { 
-        background: linear-gradient(45deg, #ff4b4b, #a80000);
-        color: white; border: none;
-    }
+    .stat-val { font-size: 20px; font-weight: bold; color: #00fbff; }
     </style>
     """, unsafe_allow_html=True)
 
-# Sidebar - Login Details
+# Sidebar
 with st.sidebar:
     st.markdown("## 🤖 ADITYA BOT")
-    st.image("https://cdn-icons-png.flaticon.com/512/2091/2091665.png", width=80)
     st.header("🔑 MASTER ACCESS")
-    acc_id = st.text_input("MT5 ID", placeholder="Account Number")
+    acc_id = st.text_input("MT5 ID")
     password = st.text_input("Password", type="password")
-    server = st.text_input("Server", placeholder="Broker Server Name")
+    server = st.text_input("Server")
     st.divider()
+    tf = st.selectbox("Select Timeframe", ["1 Minute (M1)", "5 Minutes (M5)"])
     st.info("System Ready: Connection Optimized")
 
 # Header
-st.title("🤖 ADITYA AI SCALPER - ULTIMATE V4.0")
-st.write("---")
+st.title("🤖 ADITYA AI SCALPER - ULTIMATE V4.2")
 
-# Main Content
 left, right = st.columns([1.5, 2])
 
 with left:
     st.subheader("⚙️ STRATEGY SETTINGS")
     with st.container(border=True):
-        selected_asset = st.selectbox("Select Trading Asset", ["XAUUSD (GOLD)", "EURUSD", "GBPUSD", "US30", "BTCUSD"])
+        selected_asset = st.selectbox("Select Trading Asset", ["XAUUSD (GOLD)", "EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "US30", "BTCUSD", "ETHUSD"])
         lot = st.number_input("Lot Size", 0.01, 5.0, 0.01, step=0.01)
-        mode = st.radio("Execution Mode", ["Conservative 🛡️", "Aggressive 🔥"], horizontal=True)
+        mode = st.radio("Execution Mode", ["Conservative", "Aggressive"], horizontal=True)
         
         st.divider()
-        st.markdown("**Profit & Risk Control (In Dollars $)**")
-        control_type = st.segmented_control("Control Mode", ["AI Automatic 🤖", "Manual Dollars ($) 💰"])
+        st.markdown("**Profit & Risk Control ($)**")
+        control_type = st.segmented_control("Control Mode", ["AI Automatic", "Manual Dollars ($)"])
         
         tp_val, sl_val = "Auto", "Auto"
-        if control_type == "Manual Dollars ($) 💰":
+        if control_type == "Manual Dollars ($)":
             c1, c2 = st.columns(2)
             tp_val = c1.number_input("Take Profit ($)", 1, 5000, 50)
             sl_val = c2.number_input("Stop Loss ($)", 1, 5000, 20)
 
     if st.button("▶ START TRADING"):
         if not acc_id or not password:
-            st.error("Bhai, pehle MT5 ID aur Password dalo!")
+            st.error("Error: Please enter MT5 ID and Password!")
         else:
             st.balloons()
-            st.success(f"Bot connected to {server}! Trading {selected_asset} started.")
-            
-    if st.button("🛑 STOP BOT"):
-        st.error("System Offline")
+            st.success(f"Bot active on {tf} for {selected_asset}!")
 
 with right:
     st.subheader("📊 LIVE METRICS")
     m1, m2 = st.columns(2)
-    with m1: st.markdown(f'<div class="stat-card"><small>Selected Pair</small><div class="stat-val">{selected_asset}</div></div>', unsafe_allow_html=True)
+    with m1: st.markdown(f'<div class="stat-card"><small>Timeframe</small><div class="stat-val">{tf}</div></div>', unsafe_allow_html=True)
     with m2: st.markdown('<div class="stat-card"><small>Daily P/L</small><div class="stat-val" style="color:#00ff88;">$0.00</div></div>', unsafe_allow_html=True)
     
     st.subheader("📜 LIVE INTELLIGENCE LOGS")
     with st.container(border=True):
         st.code(f"""
-[SYSTEM] Aditya AI V4.0 - BOOTED
-[AUTH] Login Attempt: {acc_id if acc_id else 'Waiting...'}
-[SERVER] Connected to: {server if server else 'Scan Mode'}
-[CONFIG] Asset: {selected_asset} | Lot: {lot}
-[TARGETS] TP: ${tp_val} | SL: ${sl_val}
-[STATUS] Scanning Market for high-volatility candles...
+[SYSTEM] Aditya AI V4.2 - FULLY LOADED
+[TIMEFRAME] {tf} Analysis Enabled
+[ASSET] Tracking: {selected_asset}
+[MODE] {mode}
+[LOG] Scanning Trend -> UP=BUY, DOWN=SELL
+[STATUS] Waiting for high-probability entry...
         """, language="bash")
 
 st.write("---")
