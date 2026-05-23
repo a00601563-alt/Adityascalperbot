@@ -9,8 +9,6 @@ st.markdown("""
     <style>
     .main { background-color: #0e1117; color: white; }
     .stApp { background: radial-gradient(circle, #1c1f26 0%, #0e1117 100%); }
-    
-    /* Stats Cards */
     .stat-card {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(0, 251, 255, 0.2);
@@ -20,15 +18,11 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     .stat-val { font-size: 24px; font-weight: bold; color: #00fbff; }
-    
-    /* Buttons */
     .stButton>button {
         width: 100%;
         border-radius: 10px;
         height: 3.5em;
         font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
     }
     .stButton>button:first-child { 
         background: linear-gradient(45deg, #00ff88, #00a859);
@@ -41,7 +35,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Sidebar - Connection Hub
+# Sidebar
 with st.sidebar:
     st.image("https://cdn-icons-png.flaticon.com/512/2091/2091665.png", width=80)
     st.header("🔑 MASTER ACCESS")
@@ -76,12 +70,12 @@ with left:
         
         st.divider()
         st.markdown("**Profit & Risk Control**")
-        control_type = st.segmented_control("Control Mode", ["AI Automatic", "Manual Pips"])
+        control_type = st.segmented_control("Control Mode", ["AI Automatic", "Manual Dollars ($)"])
         
-        if control_type == "Manual Pips":
+        if control_type == "Manual Dollars ($)":
             c1, c2 = st.columns(2)
-            tp = c1.number_input("Take Profit (Pips)", 1, 100, 10)
-            sl = c2.number_input("Stop Loss (Pips)", 1, 100, 5)
+            tp = c1.number_input("Take Profit ($)", 1, 1000, 50)
+            sl = c2.number_input("Stop Loss ($)", 1, 1000, 20)
         else:
             st.write("🤖 AI is handling TP/SL based on market volatility.")
             tp, sl = "Auto", "Auto"
@@ -100,13 +94,12 @@ with right:
 [SYSTEM] Initializing Aditya AI Scalper...
 [CONFIG] Asset: XAUUSD | Lot: {lot}
 [MODE] Strategy: {mode} | Control: {control_type}
-[TARGETS] TP: {tp} | SL: {sl}
+[TARGETS] TP: ${tp} | SL: ${sl}
 [WAIT] Scanning for high-probability setups...
         """, language="bash")
     
     st.divider()
     st.markdown("#### 🔄 MULTI-ACCOUNT MANAGEMENT")
-    st.checkbox("Enable Sync for Multi-Account", value=False)
     st.button("+ Add Linked Account")
 
 st.write("---")
