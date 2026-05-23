@@ -7,11 +7,11 @@ st.set_page_config(
     page_icon="🤖"
 )
 
-# WHITE THEME CSS
+# WHITE THEME + RED BUTTON CSS
 st.markdown("""
 <style>
 
-/* FORCE FULL WHITE SCREEN */
+/* FULL WHITE SCREEN */
 html, body, [class*="css"] {
     background-color: white !important;
     color: black !important;
@@ -66,14 +66,18 @@ div[data-baseweb="select"] > div {
     border-radius: 10px;
 }
 
-/* BUTTON */
+/* RED BUTTON */
 .stButton button {
-    background: black !important;
+    background: #ff0000 !important;
     color: white !important;
     border-radius: 12px;
     border: none;
     font-weight: bold;
     padding: 10px 20px;
+}
+
+.stButton button:hover {
+    background: #cc0000 !important;
 }
 
 /* CODE BOX */
