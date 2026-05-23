@@ -10,37 +10,36 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# Sidebar - Connection Keys
+# Sidebar - Sirf MT5 Details
 with st.sidebar:
-    st.header("MASTER CONNECTION")
+    st.header("🔑 MT5 CONNECTION")
     acc_id = st.text_input("MT5 Account ID")
     password = st.text_input("MT5 Password", type="password")
-    api_token = st.text_input("MetaApi Token")
     server = st.text_input("Server Name")
     st.success("Trend Logic: ACTIVATED")
 
-st.title("ADITYA MASTER BOT - V5.0")
+st.title("🤖 ADITYA MASTER BOT - FINAL V6.2")
 
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.subheader("SETTINGS")
+    st.subheader("⚙️ SETTINGS")
     asset = st.selectbox("Asset", ["XAUUSD (GOLD)", "EURUSD", "US30"])
     tp = st.number_input("Take Profit ($)", value=50)
     
-    if st.button("START MASTER BOT"):
-        if not api_token or not acc_id:
-            st.error("Bhai, MetaApi Token aur ID to dalo!")
+    if st.button("🚀 START MASTER BOT"):
+        if not acc_id or not password or not server:
+            st.error("Bhai, MT5 ki details to dalo!")
         else:
             st.balloons()
-            st.success("Bot broker se connect ho gaya! Trend scanning shuru...")
+            st.success("Bot server se connect ho gaya! Trend scanning shuru...")
 
 with col2:
-    st.subheader("STATUS")
-    st.markdown('<div class="stat-card"><h3>TREND MODE: ON</h3><p>Market Up = Buy | Market Down = Sell</p></div>', unsafe_allow_html=True)
+    st.subheader("📊 STATUS")
+    st.markdown('<div class="stat-card"><h3>TREND MODE: ON</h3><p>Up = Buy | Down = Sell</p></div>', unsafe_allow_html=True)
     st.code("""
-[SYSTEM] Master Bot V5.0 - ONLINE
-[CONNECTION] MetaApi Bridge: ESTABLISHED
+[SYSTEM] Master Bot V6.2 - ONLINE
+[CONNECTION] MT5 Server: CONNECTED
 [STRATEGY] Trend Following Enabled
 [FILTER] Counter-Trend: BLOCKED
 [STATUS] Waiting for Trend-Aligned Signal...
