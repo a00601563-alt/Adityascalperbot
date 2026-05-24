@@ -1,247 +1,203 @@
 import streamlit as st
+import MetaTrader5 as mt5
+import pandas as pd
 
-# Page Configuration
-st.set_page_config(
-    page_title="ADITYA AI SCALPER ULTIMATE",
-    layout="wide",
-    page_icon="🤖"
-)
+st.set_page_config(page_title="ADITYA AI", layout="wide")
 
-# WHITE THEME + RED BUTTON CSS
+# ===== STYLE =====
 st.markdown("""
 <style>
-
-/* FULL WHITE SCREEN */
-html, body, [class*="css"] {
-    background-color: white !important;
-    color: black !important;
+.stApp{background:white;color:black;}
+.stButton button{
+background:red;color:white;
+border:none;border-radius:10px;
+font-weight:bold;
 }
-
-/* MAIN APP */
-.stApp {
-    background: white !important;
+.box{
+padding:15px;
+background:#f5f5f5;
+border-radius:12px;
+text-align:center;
+margin:5px;
 }
-
-/* MAIN AREA */
-.main {
-    background-color: white !important;
-    color: black !important;
-}
-
-/* SIDEBAR */
-section[data-testid="stSidebar"] {
-    background-color: #f5f5f5 !important;
-}
-
-/* CARDS */
-.stat-card {
-    background: white;
-    border: 1px solid #dcdcdc;
-    border-radius: 15px;
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-/* CARD VALUES */
-.stat-val {
-    font-size: 20px;
-    font-weight: bold;
-    color: #0077ff;
-}
-
-/* INPUT BOXES */
-div[data-baseweb="input"] input {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #cccccc !important;
-    border-radius: 10px;
-}
-
-/* SELECT BOX */
-div[data-baseweb="select"] > div {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #cccccc !important;
-    border-radius: 10px;
-}
-
-/* RED BUTTON */
-.stButton button {
-    background: #ff0000 !important;
-    color: white !important;
-    border-radius: 12px;
-    border: none;
-    font-weight: bold;
-    padding: 10px 20px;
-}
-
-.stButton button:hover {
-    background: #cc0000 !important;
-}
-
-/* CODE BOX */
-.stCodeBlock {
-    background-color: #f8f8f8 !important;
-    color: black !important;
-}
-
-/* TEXT */
-label, p, h1, h2, h3, h4, h5, h6, small {
-    color: black !important;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# ===== SIDEBAR =====
 with st.sidebar:
-    st.markdown("## 🤖 ADITYA BOT")
-    st.header("🔑 MASTER ACCESS")
 
-    acc_id = st.text_input("MT5 ID")
+    st.title("🤖 ADITYA AI")
+
+    login_id = st.text_input("MT5 Login ID")
     password = st.text_input("Password", type="password")
     server = st.text_input("Server")
 
-    st.divider()
-
-    tf = st.selectbox(
-        "Select Timeframe",
-        ["1 Minute (M1)", "5 Minutes (M5)"]
+    pair = st.selectbox(
+        "Select Pair",
+        [
+            "XAUUSD","EURUSD","GBPUSD",
+            "USDJPY","AUDUSD","USDCAD"
+        ]
     )
 
-    st.info("System Ready: Connection Optimized")
+    timeframe = st.selectbox(
+        "Timeframe",
+        ["M1","M5"]
+    )
 
-# Header
-st.title("🤖 ADITYA AI SCALPER - ULTIMATE V4.2")
+    lot = st.number_input(
+        "Lot Size",
+        0.01,5.0,0.01
+    )
 
-left, right = st.columns([1.5, 2])
+    tp = st.number_input(
+        "Take Profit ($)",
+        1,10000,50
+    )
 
-# LEFT SIDE
-with left:
+    sl = st.number_input(
+        "Stop Loss ($)",
+        1,10000,20
+    )
 
-    st.subheader("⚙️ STRATEGY SETTINGS")
+    mode = st.radio(
+        "Trading Mode",
+        ["SAFE","AGGRESSIVE"]
+    )
 
-    with st.container(border=True):
+# ===== TITLE =====
+st.title("🤖 ADITYA AI SCALPER")
 
-        selected_asset = st.selectbox(
-            "Select Trading Asset",
-            [
-                "XAUUSD (GOLD)",
-                "EURUSD",
-                "GBPUSD",
-                "USDJPY",
-                "AUDUSD",
-                "US30",
-                "BTCUSD",
-                "ETHUSD"
-            ]
+# ===== CONNECT =====
+if st.button("🚀 START BOT"):
+
+    if mt5.initialize():
+
+        login = mt5.login(
+            int(login_id),
+            password=password,
+            server=server
         )
 
-        lot = st.number_input(
-            "Lot Size",
-            0.01,
-            5.0,
-            0.01,
-            step=0.01
-        )
+        if login:
 
-        mode = st.radio(
-            "Execution Mode",
-            ["Conservative", "Aggressive"],
-            horizontal=True
-        )
+            st.success("MT5 CONNECTED ✅")
 
-        st.divider()
+            # ===== TIMEFRAME =====
+            tf = mt5.TIMEFRAME_M1
 
-        st.markdown("**Profit & Risk Control ($)**")
+            if timeframe == "M5":
+                tf = mt5.TIMEFRAME_M5
 
-        control_type = st.segmented_control(
-            "Control Mode",
-            ["AI Automatic", "Manual Dollars ($)"]
-        )
-
-        tp_val, sl_val = "Auto", "Auto"
-
-        if control_type == "Manual Dollars ($)":
-
-            c1, c2 = st.columns(2)
-
-            tp_val = c1.number_input(
-                "Take Profit ($)",
-                1,
-                5000,
-                50
+            # ===== MARKET DATA =====
+            rates = mt5.copy_rates_from_pos(
+                pair, tf, 0, 20
             )
 
-            sl_val = c2.number_input(
-                "Stop Loss ($)",
-                1,
-                5000,
-                20
-            )
+            df = pd.DataFrame(rates)
 
-    # BUTTON
-    if st.button("▶ START TRADING"):
+            last_close = df.close.iloc[-1]
+            prev_close = df.close.iloc[-2]
 
-        if not acc_id or not password:
+            # ===== AI ANALYSIS =====
+            signal = "WAIT"
 
-            st.error(
-                "Error: Please enter MT5 ID and Password!"
-            )
+            if last_close > prev_close:
+                signal = "BUY"
+
+            elif last_close < prev_close:
+                signal = "SELL"
+
+            # ===== LIVE PRICE =====
+            tick = mt5.symbol_info_tick(pair)
+
+            buy_price = tick.ask
+            sell_price = tick.bid
+
+            # ===== DASHBOARD =====
+            c1,c2,c3,c4 = st.columns(4)
+
+            c1.markdown(f"""
+            <div class="box">
+            PAIR<br><b>{pair}</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+            c2.markdown(f"""
+            <div class="box">
+            TF<br><b>{timeframe}</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+            c3.markdown(f"""
+            <div class="box">
+            SIGNAL<br><b>{signal}</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+            c4.markdown(f"""
+            <div class="box">
+            LOT<br><b>{lot}</b>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # ===== AGGRESSIVE =====
+            deviation = 20
+
+            if mode == "AGGRESSIVE":
+                deviation = 50
+
+            # ===== AUTO TRADE =====
+            if signal == "BUY":
+
+                request = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "symbol": pair,
+                    "volume": lot,
+                    "type": mt5.ORDER_TYPE_BUY,
+                    "price": buy_price,
+                    "deviation": deviation,
+                    "magic": 100,
+                    "comment": "ADITYA AI BUY",
+                    "type_time": mt5.ORDER_TIME_GTC,
+                    "type_filling": mt5.ORDER_FILLING_IOC,
+                }
+
+                mt5.order_send(request)
+
+                st.success("BUY TRADE OPENED ✅")
+
+            elif signal == "SELL":
+
+                request = {
+                    "action": mt5.TRADE_ACTION_DEAL,
+                    "symbol": pair,
+                    "volume": lot,
+                    "type": mt5.ORDER_TYPE_SELL,
+                    "price": sell_price,
+                    "deviation": deviation,
+                    "magic": 100,
+                    "comment": "ADITYA AI SELL",
+                    "type_time": mt5.ORDER_TIME_GTC,
+                    "type_filling": mt5.ORDER_FILLING_IOC,
+                }
+
+                mt5.order_send(request)
+
+                st.error("SELL TRADE OPENED ✅")
+
+            st.code(f"""
+MT5 CONNECTED
+PAIR = {pair}
+TIMEFRAME = {timeframe}
+SIGNAL = {signal}
+MODE = {mode}
+LIVE MARKET RUNNING
+AUTO TRADING ACTIVE
+            """)
 
         else:
+            st.error("LOGIN FAILED ❌")
 
-            st.balloons()
-
-            st.success(
-                f"Bot active on {tf} for {selected_asset}!"
-            )
-
-# RIGHT SIDE
-with right:
-
-    st.subheader("📊 LIVE METRICS")
-
-    m1, m2 = st.columns(2)
-
-    with m1:
-        st.markdown(
-            f'''
-            <div class="stat-card">
-                <small>Timeframe</small>
-                <div class="stat-val">{tf}</div>
-            </div>
-            ''',
-            unsafe_allow_html=True
-        )
-
-    with m2:
-        st.markdown(
-            '''
-            <div class="stat-card">
-                <small>Daily P/L</small>
-                <div class="stat-val" style="color:#00aa55;">
-                    $0.00
-                </div>
-            </div>
-            ''',
-            unsafe_allow_html=True
-        )
-
-    st.subheader("📜 LIVE INTELLIGENCE LOGS")
-
-    with st.container(border=True):
-
-        st.code(f"""
-[SYSTEM] Aditya AI V4.2 - FULLY LOADED
-[TIMEFRAME] {tf} Analysis Enabled
-[ASSET] Tracking: {selected_asset}
-[MODE] {mode}
-[LOG] Scanning Trend -> UP=BUY, DOWN=SELL
-[STATUS] Waiting for high-probability entry...
-        """, language="bash")
-
-st.write("---")
-
-st.caption("Aditya AI Labs | Scalping Terminal 2026")
+    else:
+        st.error("MT5 NOT FOUND ❌")
