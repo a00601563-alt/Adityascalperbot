@@ -4,64 +4,79 @@ import pandas as pd
 import time
 
 # Page Configuration
-st.set_page_config(page_title="DREAMLINER PRO TERMINAL", layout="wide")
+st.set_page_config(page_title="ADITYA AI SCALPER ULTIMATE", layout="wide", page_icon="🤖")
 
-# Styling
+# CSS for White Theme, Red Buttons, and Dashboard look
 st.markdown("""
     <style>
-    .main {background-color: #f5f5f5;}
-    .stButton>button {width: 100%; border-radius: 5px; height: 3em; background-color: #0047AB; color: white;}
+    .stApp { background-color: #ffffff; color: #000000; }
+    h1, h2, h3, p, label { color: #000000 !important; }
+    div.stButton > button:first-child {
+        background-color: #FF0000;
+        color: white;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+    }
+    .stat-card { background: #f0f2f6; border: 1px solid #FF0000; 
+                 border-radius: 10px; padding: 15px; text-align: center; color: #000000; }
+    .stat-val { font-size: 20px; font-weight: bold; color: #FF0000; }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🚀 DREAMLINER PROFESSIONAL TRADING TERMINAL")
-
-# 1. Sidebar Connection
+# Sidebar - Login & Timing
 with st.sidebar:
-    st.header("⚙️ SYSTEM CONFIG")
-    login = st.text_input("MT5 Login ID")
+    st.header("🔑 MASTER ACCESS")
+    acc_id = st.text_input("MT5 ID")
     password = st.text_input("Password", type="password")
-    server = st.text_input("Server Name")
-    if st.button("CONNECT TO MT5"):
-        if mt5.initialize(login=int(login), password=password, server=server):
-            st.success("CONNECTION ESTABLISHED")
+    server = st.text_input("Server")
+    st.divider()
+    st.subheader("⏱️ CHART SETTINGS")
+    tf = st.selectbox("Select Timeframe", ["1 Minute (M1)", "5 Minutes (M5)"])
+    st.info("System Ready for Trading")
+
+# Header
+st.title("🤖 ADITYA AI SCALPER - ULTIMATE V4.5")
+
+# Dashboard Layout
+col1, col2 = st.columns([1.5, 2])
+
+with col1:
+    st.subheader("⚙️ STRATEGY & RISK")
+    with st.container(border=True):
+        selected_asset = st.selectbox("Select Asset", ["XAUUSD (GOLD)", "EURUSD", "GBPUSD", "USDJPY", "US30"])
+        lot = st.number_input("Lot Size", 0.01, 5.0, 0.01, step=0.01)
+        sl_val = st.number_input("Stop Loss ($)", min_value=1.0, value=10.0, step=1.0)
+        tp_val = st.number_input("Take Profit ($)", min_value=1.0, value=20.0, step=1.0)
+        mode = st.radio("Execution Mode", ["Conservative", "Aggressive"], horizontal=True)
+    
+    start_btn = st.button("▶ START TRADING")
+    stop_btn = st.button("🛑 STOP BOT")
+
+    if start_btn:
+        if not acc_id or not password:
+            st.error("Error: Enter MT5 ID and Password!")
         else:
-            st.error("CONNECTION FAILED")
+            st.success(f"Bot active: {selected_asset} | TF: {tf} | SL:${sl_val} | TP:${tp_val}")
+    
+    if stop_btn:
+        st.warning("System Stopped!")
 
-# 2. Controls
-c1, c2, c3, c4 = st.columns(4)
-lot = c1.number_input("Lot Size", 0.01, 10.0, 0.01)
-sl = c2.number_input("SL ($)", 0.0, 1000.0, 10.0)
-tp = c3.number_input("TP ($)", 0.0, 1000.0, 20.0)
-mode = c4.selectbox("Mode", ["Safe Mode", "Aggressive Mode"])
+with col2:
+    st.subheader("📊 LIVE METRICS")
+    m1, m2 = st.columns(2)
+    with m1: st.markdown(f'<div class="stat-card"><small>Timeframe</small><div class="stat-val">{tf}</div></div>', unsafe_allow_html=True)
+    with m2: st.markdown('<div class="stat-card"><small>Daily P/L</small><div class="stat-val" style="color:#FF0000;">$0.00</div></div>', unsafe_allow_html=True)
+    
+    st.subheader("📜 LIVE INTELLIGENCE LOGS")
+    with st.container(border=True):
+        st.code(f"""
+[SYSTEM] Aditya AI V4.5 - READY
+[TIMING] Running on {tf}
+[ASSET] {selected_asset}
+[RISK] SL:${sl_val} / TP:${tp_val}
+[LOG] Awaiting market triggers...
+        """, language="bash")
 
-# 3. Execution Logic
-if st.button("START DREAMLINER BOT"):
-    st.info("ENGINE RUNNING... ANALYZING MARKET TREND...")
-    # Add your strategy logic here
-    # Example: if mt5.symbol_info_tick("XAUUSD").ask > ...
-    st.write("AI Analysis: Scanning symbols for optimal entry...")
-
-# 4. Live Dashboard
-col_left, col_right = st.columns([2, 1])
-
-with col_left:
-    st.subheader("📡 MARKET MONITORING")
-    # Real-time data table
-    data = {"Symbol": ["XAUUSD", "EURUSD", "GBPUSD", "USDJPY", "AUDUSD", "USDCAD"],
-            "Status": ["Active", "Active", "Active", "Active", "Active", "Active"]}
-    st.table(pd.DataFrame(data))
-
-with col_right:
-    st.subheader("📜 SYSTEM LOGS")
-    log_box = st.text_area("Live activity feed", "System initialized. Waiting for user input...", height=300)
-    if st.button("KILL SWITCH (STOP ALL)"):
-        st.warning("EMERGENCY STOP TRIGGERED!")
-
-# 5. Trend Analysis Status
-st.markdown("---")
-st.subheader("🤖 AI TREND DIRECTION")
-st.success("CURRENT DIRECTION: SCANNING MARKET FLOW...")
-
-# Footer
-st.caption("DREAMLINER SYSTEM v1.0 | SECURE CONNECTION ENABLED")
+st.write("---")
+st.caption("Aditya AI Labs | Scalping Terminal 2026")
